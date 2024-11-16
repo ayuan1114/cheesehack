@@ -1,22 +1,40 @@
 import React from 'react';
-import './navbar.css';
-import { Navbar, Nav, Container } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 
-function CustomNavbar() {
+export default function CustomNavbar() {
   return (
-    <Navbar bg="dark" variant="dark" expand="lg">
-      <Container>
-        <Navbar.Brand href="/">MyApp</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="me-auto">
-            <Nav.Link href="/">Home</Nav.Link>
-            <Nav.Link href="/analysis">Analysis</Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
+    <nav className="bg-gray-800">
+      <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+        <div className="relative flex items-center justify-between h-16">
+          {/* Logo and Site Name */}
+          <div className="flex items-center">
+            <img
+              src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=500" // Replace with your logo URL
+              alt="Site Logo"
+              className="h-8 w-auto mr-2"
+            />
+            <span className="text-white text-lg font-bold">MySite</span>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="hidden sm:block">
+            <div className="flex space-x-4">
+              <Link
+                to="/"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Home
+              </Link>
+              <Link
+                to="/analysis"
+                className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
+              >
+                Analysis
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 }
-
-export default CustomNavbar;
