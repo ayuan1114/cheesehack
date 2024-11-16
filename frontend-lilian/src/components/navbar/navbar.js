@@ -12,7 +12,6 @@ function CustomNavbar() {
           <Nav className="me-auto">
             <Nav.Link href="/">Home</Nav.Link>
             <Nav.Link href="/analysis">Analysis</Nav.Link>
-            <Nav.Link href="/about">About</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
