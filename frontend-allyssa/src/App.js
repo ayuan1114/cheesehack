@@ -1,24 +1,25 @@
-import logo from './logo.svg';
 import './App.css';
+import React from 'react';
+import CustomNavbar from './components/navbar/navbar';
+import Footer from './components/footer/footer';
+import GolfSwingUpload from './components/golf-swing-upload/golf-swing-upload';
+import HomePage from './pages/home-page';
+import AnalysisPage from './pages/analysis-page';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <CustomNavbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/analysis" element={<AnalysisPage />} />
+        </Routes>
+        <GolfSwingUpload />
+        <Footer />
+      </div>
+    </Router>
   );
 }
 
