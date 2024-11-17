@@ -1,5 +1,4 @@
 import mediapipe as mp
-import cv2
 import numpy as np
 
 # Initialize MediaPipe Pose
@@ -31,5 +30,7 @@ def process_vid(video):
         processed_frame, pose = process_frame(frame)
         processed_vid.append(processed_frame)
         pose_array.append(pose)
+    processed_vid = np.array(processed_vid)
+    pose_array = np.array(pose_array)
     return processed_vid, pose_array
             
