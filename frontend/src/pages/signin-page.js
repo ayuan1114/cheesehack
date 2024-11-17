@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/images/logo.svg';
+import logo from '../assets/images/signin-logo.png';
 
 export default function SigninPage() {
   const [username, setUsername] = useState(''); // Changed from email to username
@@ -21,7 +21,7 @@ export default function SigninPage() {
           <img
             alt="Your Company"
             src={logo}
-            className="mx-auto h-20 w-auto"
+            className="mx-auto h-40 w-auto"
           />
           <h2 className="mt-3 text-center text-2xl/9 font-bold tracking-tight text-gray-900">
             Sign in to your account
@@ -29,10 +29,10 @@ export default function SigninPage() {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form action="#" method="POST" className="space-y-6">
+          <form onSubmit={handleSignIn} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm/6 font-medium text-gray-900">
-                Email address
+                Username
               </label>
               <div className="mt-2">
                 <input
