@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SwingStyle</title>
+    <style>
+        body {
+        display: flex;
+        flex-direction: column;
+        background: linear-gradient(to bottom right, #c4e1f1, #388464);
+        opacity: 80%;
+        color: #030D11;
+        font-family: 'DM Sans', 'Gotham', 'Avenir', sans-serif;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+        justify-content: center;
+        align-items: center;
+        }
+
+        h2 {
+            color: #164F37;
+        }
+
+        .content-top {
+            flex-direction: column;
+        }
+        .component {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            background-color: #F7F5F2;
+            border-radius: 10px;
+
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+            padding: 20px;
+            height: auto;
+        }
+        .profile {
+            display: flex;
+        }
+        .icon {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            padding: 10px;
+        }
+        .profile-info {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            padding-top: 4%;
+            line-height: 0.25;
+        }
+
+        .content-bottom {
+            flex-direction: row;
+
+            display: flex;
+        }
+        .component {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .recent-text {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            padding-top: 4%;
+            line-height: 0.25;
+
+            width: 25vh;
+        }
+        .pointers {
+            line-height: normal;
+            padding-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="content-top">
+        <!-- top section for profile things -->
+        <div class="component">
+            <div class="profile">
+                <div class="icon">
+                    <!-- icon is a placeholder -->
+                    <img src="https://www.starksfamilyfh.com/image/9/web" 
+                    alt="icon">
+                </div>
+                <!-- simple welcome/profile section -->
+                <div class="profile-info">
+                    <h2 id="welcome">Hi there, name!</h2>
+                    <p id="user">@username</p>
+                </div>
+            </div>
+        </div>
+        <!-- bottom section divided into two for most recent analysis -->
+            <div class="content-bottom">
+                <div class="analysis">
+                    
+                </div>
+                <div class="component">
+                    <!-- recent analysis summary area -->
+                    <div class="recent recent-text">
+                        <h2>Last Analysis</h2>
+                        <p id="summary">summary notes: </p>
+                        <ul class="pointers">
+                            <li>blah</li>
+                            <li>blah</li>
+                            <li>blah</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="component">
+                    <!-- recently analysis video clip -->
+                    <div class="recent recent-video">
+                        <!-- placeholder video -->
+                        <iframe width="420" height="236.25" 
+                        src="https://www.youtube.com/embed/Jlp8G9paliw?si=m9qys_szBaX41K4S" 
+                        title="YouTube video player" frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; 
+                        gyroscope; picture-in-picture; web-share" 
+                        referrerpolicy="strict-origin-when-cross-origin" 
+                        allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+    </div>
+</body>
+</html>
