@@ -5,20 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SwingStyle</title>
     <style>
-        /* body {
-
-            display: flex;
-            flex-direction: column;
-
-            background: linear-gradient(to bottom, #bdc3c7 , #2c3e50);
-            color: #030D11;
-            font-family: dm sans, gotham, avenir, sans-serif;
-        } */
-
         body {
         display: flex;
         flex-direction: column;
-        background: linear-gradient(to bottom, #dfe6ea, #164F37);
+        background: linear-gradient(to bottom right, #c4e1f1, #388464);
+        opacity: 80%;
         color: #030D11;
         font-family: 'DM Sans', 'Gotham', 'Avenir', sans-serif;
         height: 100vh;
@@ -56,7 +47,7 @@
             width: 150px;
             height: 150px;
             display: flex;
-            padding: 12% 10px;
+            padding: 10px;
         }
         .profile-info {
             padding: 10px;
@@ -87,6 +78,8 @@
 
             padding-top: 4%;
             line-height: 0.25;
+
+            width: 25vh;
         }
         .pointers {
             line-height: normal;
@@ -106,8 +99,8 @@
                 </div>
                 <!-- simple welcome/profile section -->
                 <div class="profile-info">
-                    <h2 id="welcome">hi there, username!</h2>
-                    <p id="email">email@email.com</p>
+                    <h2 id="welcome">Hi there, name!</h2>
+                    <p id="user">@username</p>
                 </div>
             </div>
         </div>
@@ -119,7 +112,7 @@
                 <div class="component">
                     <!-- recent analysis summary area -->
                     <div class="recent recent-text">
-                        <h2>recent</h2>
+                        <h2>Last Analysis</h2>
                         <p id="summary">summary notes: </p>
                         <ul class="pointers">
                             <li>blah</li>
@@ -131,6 +124,7 @@
                 <div class="component">
                     <!-- recently analysis video clip -->
                     <div class="recent recent-video">
+                        <!-- placeholder video -->
                         <iframe width="420" height="236.25" 
                         src="https://www.youtube.com/embed/Jlp8G9paliw?si=m9qys_szBaX41K4S" 
                         title="YouTube video player" frameborder="0" 
