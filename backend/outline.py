@@ -63,28 +63,35 @@ def overlay_swing_on_video(video_path, swing_data, output_video_path):
         # Scale landmarks to actual frame dimensions
         scaled_landmarks = []
         for landmark in landmarks:
-            if len(landmark) == 2:  
+            if len(landmark) == 2:  # Only 2D landmarks (x, y)
                 x, y = landmark
-            else:
-                continue  # Skip invalid landmark data
-            
-            # Scale the coordinates based on frame size
-            scaled_landmarks.append((x * frame_width, y * frame_height))
+                # Scale the coordinates based on frame size
+                scaled_x = int(x * frame_width)
+                scaled_y = int(y * frame_height)
+                print(f"Landmark {frame_idx}: Scaled ({x}, {y}) to ({scaled_x}, {scaled_y})") 
+                scaled_landmarks.append((scaled_x, scaled_y))
 
-        # Create a landmark list for drawing
-        landmarks_proto = convert_to_landmark_list(scaled_landmarks)
+        # draw landmarks
+        for i, (x, y) in enumerate(scaled_landmarks):
+        
+            cv2.circle(frame, (int(x), int(y)), 1, (0, 255, 0), -1)  
+    
+            # Connect lines between consecutive landmarks
+            for connection in mp_pose.POSE_CONNECTIONS:
+                # Each connection is a pair of indices (from, to)
+                start_idx, end_idx = connection
+    
+                # Get the coordinates of the start and end landmarks
+                start_landmark = scaled_landmarks[start_idx]
+                end_landmark = scaled_landmarks[end_idx]
+    
+                # Draw a line between the start and end landmarks
+                start_x, start_y = int(start_landmark[0]), int(start_landmark[1])
+                end_x, end_y = int(end_landmark[0]), int(end_landmark[1])
+                cv2.line(frame, (start_x, start_y), (end_x, end_y), (255, 0, 0), 2)
 
-        # Draw landmarks and connections on the frame
-        frame_copy = frame.copy()
-        mp_drawing.draw_landmarks(
-            frame_copy,
-            landmarks_proto,
-            mp_pose.POSE_CONNECTIONS,
-            landmark_drawing_spec=mp_drawing.DrawingSpec(color=(0, 255, 0), thickness=2, circle_radius=2),
-            connection_drawing_spec=mp_drawing.DrawingSpec(color=(255, 0, 0), thickness=2)
-        )
-
-        vid.append(frame_copy)
+        # Store the frame with overlaid landmarks
+        vid.append(frame)
         success, frame = cap.read()
         frame_idx += 1
 
@@ -96,7 +103,7 @@ csv_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/pro_swing_rubric.csv"
 loaded_sd = load_swing_data(csv_path)
 sd = get_swing_data(loaded_sd)
 
-#video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/fswing.mp4"
-video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/backend/golf_videos/72.mp4"
+video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/fswing.mp4"
+#video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/backend/golf_videos/72.mp4"
 output_video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/output_video.mp4"
 overlay_swing_on_video(video_path, sd, output_video_path)
