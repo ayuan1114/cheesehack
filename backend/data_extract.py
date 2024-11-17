@@ -126,6 +126,7 @@ def save_data(data, output_file):
     df = pd.DataFrame(frames)
     df.to_csv(os.path.join(data_folder, output_file), index=False)
 
+#takes swing vid
 def save_norm_swing(video, file_name):
     _, pose = process_vid(video)
     norm_pose = normalize_pose_data(pose)
