@@ -11,12 +11,12 @@ def convert_to_landmark_list(landmarks):
         NormalizedLandmark(x=x, y=y, z=0) for x, y in landmarks
     ])
 
-# Initialize MediaPipe Pose
+# initialize MediaPipe Pose
 mp_pose = mp.solutions.pose
 pose = mp_pose.Pose()
 mp_drawing = mp.solutions.drawing_utils
 
-# Load the CSV into a pandas DataFrame
+# load the CSV into a pandas DataFrame
 def load_swing_data(csv_path):
     df = pd.read_csv(csv_path)
 
@@ -33,23 +33,21 @@ def get_swing_data(df):
         landmarks = []
         
         for landmark_id in range(max_landmark + 1):  
-            # Extract the x, y for each landmark in the frame (only need 2D)
+            # extract the x, y for each landmark in the frame (only need 2D)
             landmark = frame_data[frame_data['landmark'] == landmark_id]
             if not landmark.empty:
                 x, y = landmark['x'].values[0], landmark['y'].values[0]
                 landmarks.append((x, y))  
-            #else:
-                #landmarks.append((0, 0))
-        
+            
         swing_data.append(landmarks)
     
     return swing_data
 
 def overlay_swing_on_video(video_path, swing_data, output_video_path):
-    # Open the video
+    # open the video
     cap = cv2.VideoCapture(video_path)
     
-    # Get the video dimensions
+    # get the video dimensions
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -60,12 +58,12 @@ def overlay_swing_on_video(video_path, swing_data, output_video_path):
     while success and frame_idx < len(swing_data):
         landmarks = swing_data[frame_idx]
 
-        # Scale landmarks to actual frame dimensions
+        # scale landmarks to actual frame dimensions
         scaled_landmarks = []
         for landmark in landmarks:
-            if len(landmark) == 2:  # Only 2D landmarks (x, y)
+            if len(landmark) == 2:  
                 x, y = landmark
-                # Scale the coordinates based on frame size
+                # scale the coordinates based on frame size
                 scaled_x = int(x * frame_width)
                 scaled_y = int(y * frame_height)
                 print(f"Landmark {frame_idx}: Scaled ({x}, {y}) to ({scaled_x}, {scaled_y})") 
@@ -76,21 +74,21 @@ def overlay_swing_on_video(video_path, swing_data, output_video_path):
         
             cv2.circle(frame, (int(x), int(y)), 1, (0, 255, 0), -1)  
     
-            # Connect lines between consecutive landmarks
+            # connect lines between landmarks that follow human body
             for connection in mp_pose.POSE_CONNECTIONS:
-                # Each connection is a pair of indices (from, to)
+
                 start_idx, end_idx = connection
     
-                # Get the coordinates of the start and end landmarks
+                # get the coordinates of the start and end landmarks
                 start_landmark = scaled_landmarks[start_idx]
                 end_landmark = scaled_landmarks[end_idx]
     
-                # Draw a line between the start and end landmarks
+                # draw a line between the start and end landmarks
                 start_x, start_y = int(start_landmark[0]), int(start_landmark[1])
                 end_x, end_y = int(end_landmark[0]), int(end_landmark[1])
                 cv2.line(frame, (start_x, start_y), (end_x, end_y), (255, 0, 0), 2)
 
-        # Store the frame with overlaid landmarks
+        # store the frame with masked landmarks
         vid.append(frame)
         success, frame = cap.read()
         frame_idx += 1
