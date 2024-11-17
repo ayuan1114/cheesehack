@@ -1,7 +1,6 @@
 import mediapipe as mp
 import numpy as np
 import pandas as pd
-import os
 import cv2
 from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark, NormalizedLandmarkList
 

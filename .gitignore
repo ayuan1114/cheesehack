@@ -1,2 +1,5 @@
 videos/
 *.mp4
+
+data/
+*.csv

@@ -1,4 +1,4 @@
-from camera import capture, save_vid, play_vid, extract_frames
+from data_extract import capture, save_vid, play_vid, extract_frames
 from model import process_vid, draw_pose_box, overlay_swing_on_video
 
 pro_vid, width1, height1 = extract_frames("pro.mp4", get_dims=True)

@@ -5,9 +5,11 @@ import ffmpeg
 import numpy as np
 import pandas as pd
 
-output_folder = "videos"
+video_folder = "videos"
+data_folder = "data"
 
-os.makedirs(output_folder, exist_ok=True)
+os.makedirs(video_folder, exist_ok=True)
+os.makedirs(data_folder, exist_ok=True)
 
 
 def capture(show = False, save = True, get_dims=False):
@@ -55,7 +57,7 @@ def capture(show = False, save = True, get_dims=False):
 
 # function to extract frames from professional video
 def extract_frames(video_path, frame_rate=30, get_dims=False):
-    cap = cv2.VideoCapture(os.path.join(output_folder, video_path))
+    cap = cv2.VideoCapture(os.path.join(video_folder, video_path))
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
@@ -102,7 +104,7 @@ def save_vid(video, file_name, width, height):
     (
         ffmpeg
         .input('pipe:0', framerate=30, format='rawvideo', pix_fmt='bgr24', s=f'{width}x{height}')
-        .output(os.path.join(output_folder, file_name), vcodec=codec, pix_fmt='yuv420p')
+        .output(os.path.join(video_folder, file_name), vcodec=codec, pix_fmt='yuv420p')
         .overwrite_output()
         .run(input=video.tobytes())  # Pass the raw bytes of the frames
     )
@@ -122,4 +124,4 @@ def save_data(data, output_file):
                     'z': landmark.z
                 })
     df = pd.DataFrame(frames)
-    df.to_csv(os.path.join(output_folder, output_file), index=False)
+    df.to_csv(os.path.join(data_folder, output_file), index=False)
