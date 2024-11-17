@@ -1,16 +1,12 @@
 export default function HomePage() {
-  return(
-    <div className="bg-gray-50  sm:py-14">
-      <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8 ">
-        <header class="bg-white shadow rounded-3xl max-w-4xl">
-          <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-            <h1 class="text-3xl font-bold tracking-tight text-gray-900 text-center">Hello, Name!</h1>
+  return (
+    <div className="bg-gray-50 sm:py-10">
+      <div className="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
+        <header className="bg-white shadow rounded-3xl mx-auto max-w-4xl"> {/* Added mx-auto */}
+          <div className="px-4 py-6 sm:px-6 lg:px-8">
+            <h1 className="text-3xl font-bold tracking-tight text-gray-900 text-center">Hello, Name!</h1>
           </div>
         </header>
-        {/* <h2 className="text-center text-base/7 font-semibold text-indigo-600">Deploy faster</h2>
-        <p className="mx-auto mt-2 max-w-lg text-balance text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl">
-          Everything you need to deploy your app
-        </p> */}
         <div className="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
           <div className="relative lg:row-span-2">
             <div className="rounded-lg bg-white max-lg:rounded-t-[2rem]"></div>
@@ -76,5 +72,5 @@ export default function HomePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
