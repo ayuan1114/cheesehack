@@ -1,21 +1,23 @@
 import cv2
-from model import process_frame, process_vid
+from model import process_frame
 import os
 import ffmpeg
 import numpy as np
+import pandas as pd
 
 output_folder = "videos"
 
 os.makedirs(output_folder, exist_ok=True)
 
-# Open a connection to the webcam
-camera = cv2.VideoCapture(0)
-fps = 30
-camera.set(cv2.CAP_PROP_FPS, fps)
-width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
-height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
-def capture(show = False, save = True):
+def capture(show = False, save = True, get_dims=False):
+    camera = cv2.VideoCapture(0)
+
+    fps = 30
+    camera.set(cv2.CAP_PROP_FPS, fps)
+    width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
     frames = []
     if not camera.isOpened():
         print("Error: Could not access the camera.")
@@ -46,7 +48,44 @@ def capture(show = False, save = True):
     camera.release()
     cv2.destroyAllWindows()
     frames = np.array(frames)
-    return frames
+    if get_dims:
+        return frames, width, height
+    else:
+        return frames
+
+# function to extract frames from professional video
+def extract_frames(video_path, frame_rate=30, get_dims=False):
+    cap = cv2.VideoCapture(os.path.join(output_folder, video_path))
+
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+    frames = []
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    # make sure interal is always 1, even if fps is lower than frame_rate
+    if fps < frame_rate:
+        print("Warning: Video FPS is lower than the desired frame rate. Using FPS as the frame rate.")
+        interval = 1  # Capture all frames if FPS is lower than the requested frame rate
+    else:
+        interval = fps // frame_rate
+
+    success, frame = cap.read()
+    count = 0
+    
+    while success:
+        if count % interval == 0:
+            # Convert frame to RGB format
+            frames.append(frame)
+            # Log the frame shape
+        success, frame = cap.read()
+        count += 1
+    
+    cap.release()
+    frames = np.array(frames)
+    if get_dims:
+        return frames, width, height
+    else:
+        return frames
 
 def play_vid(video, cap = "Recording"):
     playing = True
@@ -57,7 +96,7 @@ def play_vid(video, cap = "Recording"):
                 playing = False
                 break
 
-def save_vid(video, file_name):
+def save_vid(video, file_name, width, height):
     codec = 'libx264'
 
     (
@@ -68,8 +107,19 @@ def save_vid(video, file_name):
         .run(input=video.tobytes())  # Pass the raw bytes of the frames
     )
 
-test_vid = capture(True)
-save_vid(test_vid, 'test_vid.mp4')
-processed_vid, captured_pose = process_vid(test_vid)
-save_vid(processed_vid, 'processed_vid.mp4')
-play_vid(processed_vid, '')
+# save frame as a csv (not normalized)
+def save_data(data, output_file):
+    # Ensure the input data is structured correctly
+    frames = []
+    for frame_idx, frame in enumerate(data):
+        if frame is not None:  # Skip frames where no pose was detected
+            for landmark_idx, landmark in enumerate(frame.landmark):
+                frames.append({
+                    'frame': frame_idx,
+                    'landmark': landmark_idx,
+                    'x': landmark.x,
+                    'y': landmark.y,
+                    'z': landmark.z
+                })
+    df = pd.DataFrame(frames)
+    df.to_csv(os.path.join(output_folder, output_file), index=False)
