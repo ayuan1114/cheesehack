@@ -141,14 +141,15 @@ def save_data(data, output_file):
     })
     df.to_csv(output_file, index=False)
 
-def overlay_swing_on_video(video, height, width, swing_data, add_box=False, og_pose=False, color1=(0, 0, 255), color2=(0, 255, 0)):
+# swing_data is normalized swing poses (from load_norm_swing)
+# height and width are for the inputted video
+def overlay_swing(video, height, width, swing_data, add_box=False, og_pose=False, color1=(0, 0, 255), color2=(0, 255, 0)):
     processed, captured_pose = process_vid(video, color=color1)
     
     if og_pose:
         video = processed
 
-    norm_swing_data = normalize_pose_data(swing_data)
-    projected_pose = project_pose(norm_swing_data, captured_pose)
+    projected_pose = project_pose(swing_data, captured_pose)
 
     projected_landmarks = convert_to_landmark(projected_pose)
 

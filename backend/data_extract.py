@@ -1,5 +1,5 @@
 import cv2
-from model import process_frame
+from model import process_frame, process_vid, normalize_pose_data, convert_to_landmark
 import os
 import ffmpeg
 import numpy as np
@@ -113,15 +113,33 @@ def save_vid(video, file_name, width, height):
 def save_data(data, output_file):
     # Ensure the input data is structured correctly
     frames = []
-    for frame_idx, frame in enumerate(data):
-        if frame is not None:  # Skip frames where no pose was detected
-            for landmark_idx, landmark in enumerate(frame.landmark):
+    for frame_idx, pose in enumerate(data):
+        if pose is not None:  # Skip frames where no pose was detected
+            for landmark_idx, landmark in enumerate(pose):
                 frames.append({
                     'frame': frame_idx,
                     'landmark': landmark_idx,
-                    'x': landmark.x,
-                    'y': landmark.y,
-                    'z': landmark.z
+                    'x': landmark[0],
+                    'y': landmark[1],
+                    'z': landmark[2]
                 })
     df = pd.DataFrame(frames)
     df.to_csv(os.path.join(data_folder, output_file), index=False)
+
+def save_norm_swing(video, file_name):
+    _, pose = process_vid(video)
+    norm_pose = normalize_pose_data(pose)
+    save_data(norm_pose, file_name)
+
+# return swing data from csv as list of landmarks
+def load_norm_swing(file_name):
+    df = pd.read_csv(os.path.join(data_folder, file_name))
+
+    swing_data = []
+
+    for frame in df['frame'].unique():
+        frame_data = df[df['frame'] == frame]
+        swing_data.append(frame_data[['x', 'y', 'z']].to_numpy())
+    swing_data = np.array(swing_data)
+    convert_to_landmark(swing_data)
+    return swing_data
