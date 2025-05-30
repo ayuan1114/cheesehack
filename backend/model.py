@@ -1,3 +1,8 @@
+# Process the user's video to extract pose landmarks
+# Draw pose outline box
+# Draw skeleton for user
+# Draw skeleton overlay of pro
+
 import mediapipe as mp
 import numpy as np
 import pandas as pd

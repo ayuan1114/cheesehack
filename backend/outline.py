@@ -1,3 +1,5 @@
+# Takes input (video file, either pro or input) and will draw pose landmarks and skeleton on the original video
+
 import pandas as pd
 import cv2
 import numpy as np

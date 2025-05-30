@@ -1,3 +1,7 @@
+# Takes pro golfer swing and uses that as rubric for input
+# Input: a pro swing video
+# Output: csv containing pose data
+
 import cv2
 import mediapipe as mp
 import numpy as np
