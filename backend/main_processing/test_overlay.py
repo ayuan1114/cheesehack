@@ -1,5 +1,10 @@
-from data_extract import capture, save_vid, play_vid, extract_frames, save_norm_swing, load_norm_swing
-from model import process_vid, draw_pose_box, overlay_swing
+# Extract the skeleton (pose landmarks) from a pro swing and normalize it
+# Extract the skeleton from the user video
+# Overlay the pro's swing onto the user's video for comparison
+# Save this overlay as new video
+
+from cheesehack.backend.main_processing.data_extract import capture, save_vid, play_vid, extract_frames, save_norm_swing, load_norm_swing
+from cheesehack.backend.main_processing.model import process_vid, draw_pose_box, overlay_swing
 
 # extract frames from pro video
 pro_vid, width1, height1 = extract_frames("pro.mp4", get_dims=True)

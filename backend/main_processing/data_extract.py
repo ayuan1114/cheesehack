@@ -5,7 +5,7 @@
 # Load a previosuly saved swing CSV
 
 import cv2
-from model import process_frame, process_vid, normalize_pose_data, convert_to_landmark
+from cheesehack.backend.main_processing.model import process_frame, process_vid, normalize_pose_data, convert_to_landmark
 import os
 import ffmpeg
 import numpy as np

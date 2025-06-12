@@ -1,4 +1,4 @@
-# Overlay a precomputed skeletonb from CSV to input video
+# Overlay a precomputed skeleton from CSV to input video
 # Input: pose CSV (from rubric) and raw video (usually user, but can be pro)
 # Output: Video with 2D pose keypoitns drawn from rubric like data
 

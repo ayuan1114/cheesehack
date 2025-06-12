@@ -6,7 +6,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pandas as pd
-from model import process_vid
+from cheesehack.backend.main_processing.model import process_vid
 from camera import save_vid
 import os
 from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark, NormalizedLandmarkList
