@@ -1,3 +1,9 @@
+# Capture a video from webcam
+# Extracts frames from existing video
+# Save or play video, converts pose landmark data into a CSV (saves each frame's landmarks)
+# Processes the input video to extract pose landmarks, normalize pose data, save it 
+# Load a previosuly saved swing CSV
+
 import cv2
 from model import process_frame, process_vid, normalize_pose_data, convert_to_landmark
 import os

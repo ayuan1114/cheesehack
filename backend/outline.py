@@ -1,4 +1,6 @@
-# Takes input (video file, either pro or input) and will draw pose landmarks and skeleton on the original video
+# Overlay a precomputed skeletonb from CSV to input video
+# Input: pose CSV (from rubric) and raw video (usually user, but can be pro)
+# Output: Video with 2D pose keypoitns drawn from rubric like data
 
 import pandas as pd
 import cv2

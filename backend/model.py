@@ -2,6 +2,8 @@
 # Draw pose outline box
 # Draw skeleton for user
 # Draw skeleton overlay of pro
+# Input: Video frames (from user input video), MediaPipe pose detection
+# Output: Processed video with overlaid skeleton (can be live)
 
 import mediapipe as mp
 import numpy as np
