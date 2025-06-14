@@ -3,11 +3,14 @@
 # Overlay the pro's swing onto the user's video for comparison
 # Save this overlay as new video
 
-from cheesehack.backend.main_processing.data_extract import capture, save_vid, play_vid, extract_frames, save_norm_swing, load_norm_swing
-from cheesehack.backend.main_processing.model import process_vid, draw_pose_box, overlay_swing
+from data_extract import capture, save_vid, play_vid, extract_frames, save_norm_swing, load_norm_swing
+from model import process_vid, draw_pose_box, overlay_swing
+
 
 # extract frames from pro video
-pro_vid, width1, height1 = extract_frames("pro.mp4", get_dims=True)
+#pro_vid, width1, height1 = extract_frames("pro.mp4", get_dims=True)
+pro_vid, width1, height1 = extract_frames("72.mp4", get_dims=True)
+
 # save the pro video pose landmarks
 save_norm_swing(pro_vid, "pro_pose.csv")
 # load back the saved pro pose landmarks

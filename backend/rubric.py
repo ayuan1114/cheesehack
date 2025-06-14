@@ -6,7 +6,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pandas as pd
-from cheesehack.backend.main_processing.model import process_vid
+from model import process_vid
 from camera import save_vid
 import os
 from mediapipe.framework.formats.landmark_pb2 import NormalizedLandmark, NormalizedLandmarkList
@@ -109,7 +109,9 @@ def save_data(data, output_file):
     })
     df.to_csv(output_file, index=False)
 
-video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/backend/golf_videos/72.mp4"
+#video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/backend/golf_videos/72.mp4"
+video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/backend/golf_videos/114.mp4"
+#video_path = "/Users/felixzhu/CS/cheesehacks/cheesehack/videos/114.mp4"
 frames = extract_frames(video_path)
 _,pose_data = process_vid(frames)
 normalized_data = normalize_pose_data(pose_data)

@@ -5,9 +5,10 @@
 # Load a previosuly saved swing CSV
 
 import cv2
-from cheesehack.backend.main_processing.model import process_frame, process_vid, normalize_pose_data, convert_to_landmark
+from model import process_frame, process_vid, normalize_pose_data, convert_to_landmark
 import os
 import ffmpeg
+import tempfile
 import numpy as np
 import pandas as pd
 
@@ -63,6 +64,18 @@ def capture(show = False, save = True, get_dims=False):
 
 # function to extract frames from professional video
 def extract_frames(video_path, frame_rate=30, get_dims=False):
+
+    # rotate video before extracting
+    rotated_path = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False).name
+    (
+        ffmpeg
+        .input(video_path)
+        .filter('transpose', 1)  # rotate 90° clockwise
+        .output(rotated_path)
+        .overwrite_output()
+        .run()
+    )
+
     cap = cv2.VideoCapture(os.path.join(video_folder, video_path))
 
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -89,6 +102,8 @@ def extract_frames(video_path, frame_rate=30, get_dims=False):
         count += 1
     
     cap.release()
+    os.remove(rotated_path) # clean rotated video after frames extracted
+
     frames = np.array(frames)
     if get_dims:
         return frames, width, height
