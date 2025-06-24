@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pose Comparison API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="file"], select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.info { background-color: #d1ecf1; color: #0c5460; }
+        .pro-videos {
+            margin-top: 20px;
+        }
+        .pro-video-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            border-radius: 3px;
+        }
+        .progress {
+            display: none;
+            width: 100%;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .progress-bar {
+            height: 20px;
+            background-color: #007bff;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            transition: width 0.3s ease;
+        }
+        .download-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏃‍♂️ Pose Comparison API Test</h1>
+        
+        <div class="form-group">
+            <button onclick="loadProVideos()">Load Available Pro Videos</button>
+            <button onclick="checkApiHealth()">Check API Health</button>
+        </div>
+        
+        <div id="proVideosSection" class="pro-videos" style="display: none;">
+            <h3>Available Professional Videos:</h3>
+            <div id="proVideosList"></div>
+        </div>
+        
+        <form id="uploadForm" onsubmit="uploadVideo(event)">
+            <div class="form-group">
+                <label for="userVideo">Upload Your Video (MP4 only):</label>
+                <input type="file" id="userVideo" name="userVideo" accept=".mp4" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="proVideoSelect">Select Professional Video:</label>
+                <select id="proVideoSelect" name="proVideoSelect" required>
+                    <option value="">First load pro videos above</option>
+                </select>
+            </div>
+            
+            <button type="submit" id="submitBtn">Process Video</button>
+        </form>
+        
+        <div class="progress" id="progressBar">
+            <div class="progress-bar" id="progressBarFill" style="width: 0%">Processing...</div>
+        </div>
+        
+        <div id="status"></div>
+        
+        <div id="downloadSection" class="download-section">
+            <h3>✅ Processing Complete!</h3>
+            <p>Your pose comparison video is ready.</p>
+            <button id="downloadBtn" onclick="downloadVideo()">Download Video</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000';
+        let currentDownloadUrl = '';
+        let currentSessionId = '';
+
+        async function checkApiHealth() {
+            showStatus('Checking API health...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                if (response.ok) {
+                    showStatus('✅ API is healthy and running!', 'success');
+                } else {
+                    showStatus('❌ API health check failed', 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Cannot connect to API. Make sure it\'s running on port 8000', 'error');
+            }
+        }
+
+        async function loadProVideos() {
+            showStatus('Loading professional videos...', 'info');
+            try {
+                const response = await fetch(`${API_BASE}/pro-videos`);
+                if (response.ok) {
+                    const data = await response.json();
+                    displayProVideos(data.pro_videos);
+                    populateProVideoSelect(data.pro_videos);
+                    if (data.pro_videos.length > 0) {
+                        showStatus(`✅ Loaded ${data.pro_videos.length} professional videos`, 'success');
+                    } else {
+                        showStatus('⚠️ No professional videos found. Add .mp4 files to pro_videos folder', 'error');
+                    }
+                } else {
+                    showStatus('❌ Failed to load professional videos', 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Error loading professional videos: ' + error.message, 'error');
+            }
+        }
+
+        function displayProVideos(videos) {
+            const proVideosSection = document.getElementById('proVideosSection');
+            const proVideosList = document.getElementById('proVideosList');
+            
+            if (videos.length === 0) {
+                proVideosList.innerHTML = '<p>No professional videos available</p>';
+            } else {
+                proVideosList.innerHTML = videos.map(video => 
+                    `<div class="pro-video-item">
+                        <strong>${video.display_name}</strong><br>
+                        <small>File: ${video.filename}</small>
+                    </div>`
+                ).join('');
+            }
+            
+            proVideosSection.style.display = 'block';
+        }
+
+        function populateProVideoSelect(videos) {
+            const select = document.getElementById('proVideoSelect');
+            select.innerHTML = '<option value="">Select a professional video</option>';
+            
+            videos.forEach(video => {
+                const option = document.createElement('option');
+                option.value = video.filename;
+                option.textContent = video.display_name;
+                select.appendChild(option);
+            });
+        }
+
+        async function uploadVideo(event) {
+            event.preventDefault();
+            
+            const formData = new FormData();
+            const userVideo = document.getElementById('userVideo').files[0];
+            const proVideoName = document.getElementById('proVideoSelect').value;
+            
+            if (!userVideo || !proVideoName) {
+                showStatus('❌ Please select both a user video and a professional video', 'error');
+                return;
+            }
+            
+            formData.append('user_video', userVideo);
+            formData.append('pro_video_name', proVideoName);
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const progressBar = document.getElementById('progressBar');
+            const progressBarFill = document.getElementById('progressBarFill');
+            
+            // Show progress and disable submit
+            submitBtn.disabled = true;
+            progressBar.style.display = 'block';
+            showStatus('🔄 Processing your video...', 'info');
+            
+            // Simulate progress (since we don't have real progress updates)
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 10;
+                if (progress > 90) progress = 90;
+                progressBarFill.style.width = progress + '%';
+            }, 1000);
+            
+            try {
+                const response = await fetch(`${API_BASE}/process-comparison`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                clearInterval(progressInterval);
+                progressBarFill.style.width = '100%';
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    currentDownloadUrl = result.download_url;
+                    currentSessionId = result.session_id;
+                    
+                    showStatus('✅ Video processed successfully!', 'success');
+                    document.getElementById('downloadSection').style.display = 'block';
+                    
+                    setTimeout(() => {
+                        progressBar.style.display = 'none';
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    showStatus(`❌ Processing failed: ${errorData.detail}`, 'error');
+                    progressBar.style.display = 'none';
+                }
+            } catch (error) {
+                clearInterval(progressInterval);
+                showStatus('❌ Error processing video: ' + error.message, 'error');
+                progressBar.style.display = 'none';
+            } finally {
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function downloadVideo() {
+            if (!currentDownloadUrl) {
+                showStatus('❌ No video available for download', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('📥 Starting download...', 'info');
+                const response = await fetch(`${API_BASE}${currentDownloadUrl}`);
+                
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = currentDownloadUrl.split('/').pop();
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                    
+                    showStatus('✅ Download started!', 'success');
+                } else {
+                    showStatus('❌ Download failed', 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Download error: ' + error.message, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        // Load pro videos on page load
+        window.addEventListener('load', () => {
+            checkApiHealth();
+        });
+    </script>
+</body>
+</html>
