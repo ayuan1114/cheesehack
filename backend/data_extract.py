@@ -63,52 +63,103 @@ def capture(show = False, save = True, get_dims=False):
         return frames
 
 # function to extract frames from professional video
+# TODO rotate video
+# if the width/heights variables are not consistently used, will corrupt output video
+
 def extract_frames(video_path, frame_rate=30, get_dims=False):
-
-    # rotate video before extracting
-    rotated_path = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False).name
-    (
-        ffmpeg
-        .input(video_path)
-        .filter('transpose', 1)  # rotate 90° clockwise
-        .output(rotated_path)
-        .overwrite_output()
-        .run()
-    )
-
-    cap = cv2.VideoCapture(os.path.join(video_folder, video_path))
-
-    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
+    cap = cv2.VideoCapture(video_path)
+    
+    original_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    original_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
     frames = []
     fps = int(cap.get(cv2.CAP_PROP_FPS))
-    # make sure interal is always 1, even if fps is lower than frame_rate
+    
     if fps < frame_rate:
         print("Warning: Video FPS is lower than the desired frame rate. Using FPS as the frame rate.")
-        interval = 1  # Capture all frames if FPS is lower than the requested frame rate
+        interval = 1
     else:
         interval = fps // frame_rate
 
     success, frame = cap.read()
     count = 0
     
+    # Track if we rotated frames
+    rotated = False
+    
     while success:
         if count % interval == 0:
-            # Convert frame to RGB format
+            frame_height, frame_width = frame.shape[:2]
+            
+            if frame_width > frame_height:
+                frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE) # or ROTATE_90_COUNTERCLOCKWISE
+                rotated = True
+                
             frames.append(frame)
-            # Log the frame shape
         success, frame = cap.read()
         count += 1
     
     cap.release()
-    os.remove(rotated_path) # clean rotated video after frames extracted
-
     frames = np.array(frames)
+
     if get_dims:
-        return frames, width, height
+        if rotated:
+            # Return swapped dimensions if we rotated
+            return frames, original_height, original_width
+        else:
+            return frames, original_width, original_height
     else:
         return frames
+    
+# def extract_frames(video_path, frame_rate=30, get_dims=False):
+
+#     # cap = cv2.VideoCapture(os.path.join(video_folder, video_path))
+#     cap = cv2.VideoCapture(video_path)
+
+#     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+#     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+#     frames = []
+#     fps = int(cap.get(cv2.CAP_PROP_FPS))
+#     # make sure interal is always 1, even if fps is lower than frame_rate
+#     if fps < frame_rate:
+#         print("Warning: Video FPS is lower than the desired frame rate. Using FPS as the frame rate.")
+#         interval = 1  # Capture all frames if FPS is lower than the requested frame rate
+#     else:
+#         interval = fps // frame_rate
+
+#     success, frame = cap.read()
+#     count = 0
+    
+#     while success:
+#         if count % interval == 0:
+#             # Check if frame needs rotation to portrait orientation
+#             frame_height, frame_width = frame.shape[:2]
+            
+#             # If frame is landscape but should be portrait, rotate it
+#             if frame_width > frame_height:
+#                 # Rotate 90 degrees counter-clockwise to make it portrait
+#                 frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+#                 # Update dimensions after rotation
+#                 frame_height, frame_width = frame.shape[:2]
+
+#             # Convert frame to RGB format
+#             frames.append(frame)
+#             # Log the frame shape
+#         success, frame = cap.read()
+#         count += 1
+    
+#     cap.release()
+
+#     frames = np.array(frames)
+
+#     # return dimenstions of the rotated frames
+
+#     if get_dims:
+#         return frames, width, height
+#     else:
+#         return frames
+
 
 def play_vid(video, cap = "Recording"):
     playing = True
@@ -119,13 +170,16 @@ def play_vid(video, cap = "Recording"):
                 playing = False
                 break
 
-def save_vid(video, file_name, width, height):
+def save_vid(video, file_path, width, height):
     codec = 'libx264'
+
+    # create a dir if it doesn't exist
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
     (
         ffmpeg
         .input('pipe:0', framerate=30, format='rawvideo', pix_fmt='bgr24', s=f'{width}x{height}')
-        .output(os.path.join(video_folder, file_name), vcodec=codec, pix_fmt='yuv420p')
+        .output(file_path, vcodec=codec, pix_fmt='yuv420p') 
         .overwrite_output()
         .run(input=video.tobytes())  # Pass the raw bytes of the frames
     )
@@ -145,7 +199,8 @@ def save_data(data, output_file):
                     'z': landmark[2]
                 })
     df = pd.DataFrame(frames)
-    df.to_csv(os.path.join(data_folder, output_file), index=False)
+    df.to_csv(output_file, index=False)
+    #df.to_csv(os.path.join(data_folder, output_file), index=False)
 
 #takes swing vid
 def save_norm_swing(video, file_name):
@@ -154,8 +209,9 @@ def save_norm_swing(video, file_name):
     save_data(norm_pose, file_name)
 
 # return swing data from csv as list of landmarks
-def load_norm_swing(file_name):
-    df = pd.read_csv(os.path.join(data_folder, file_name))
+def load_norm_swing(file_path):
+    df = pd.read_csv(file_path)
+    #df = pd.read_csv(os.path.join(data_folder, file_name))
 
     swing_data = []
 
